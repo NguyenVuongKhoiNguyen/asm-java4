@@ -4,15 +4,17 @@
 	HttpSession s = request.getSession();
 	
 	String mode = request.getParameter("mode");
-	System.out.println("Theme Mode Var " + mode);
 
+	s.setAttribute("page", "change-password");
+
+	
 	if (mode != null && mode.equals("change")) {
 		if (s.getAttribute("theme").equals("dark")) {
 			s.setAttribute("theme", "light");
-			s.setAttribute("themeTxt", "Light Mode");
+			s.setAttribute("themeTxt", "Dark Mode");
 		} else {
 			s.setAttribute("theme", "dark");
-			s.setAttribute("themeTxt", "Dark Mode");
+			s.setAttribute("themeTxt", "Light Mode");
 		}
 	} 
 %>

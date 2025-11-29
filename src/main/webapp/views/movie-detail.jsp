@@ -6,15 +6,16 @@
 	HttpSession s = request.getSession();
 	
 	String mode = request.getParameter("mode");
-	System.out.println("Theme Mode Var: " + mode);
 	
+	s.setAttribute("page", "movie-detail");
+
 	if (mode != null && mode.equals("change")) {
 		if (s.getAttribute("theme").equals("dark")) {
 			s.setAttribute("theme", "light");
-			s.setAttribute("themeTxt", "Light Mode");
+			s.setAttribute("themeTxt", "Dark Mode");
 		} else {
 			s.setAttribute("theme", "dark");
-			s.setAttribute("themeTxt", "Dark Mode");
+			s.setAttribute("themeTxt", "Light Mode");
 		}
 	} 
 %>
@@ -38,7 +39,7 @@
 	
 	<section class="container mt-5">
         <div class="ratio ratio-16x9">
-            <iframe src="${pageContext.request.contextPath}/videos/${video.link}" allowfullscreen></iframe>
+            <iframe src="${pageContext.request.contextPath}/videos/${video.video}" allowfullscreen></iframe>
         </div>
     </section>
 	
@@ -63,14 +64,36 @@
                 <article class="col-sm-9 ms-auto">
                     <div class="row">
                         <div class="w-auto p-0">
-                            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#shareModal">
-                                <i class="fa-solid fa-share"></i> Share
-                            </button>
+                        	<%
+                        		HttpSession se = request.getSession();
+                        		System.out.println(se.getAttribute("userLogin"));
+                        	%>
+                    		<c:choose>
+                    			<c:when test="${sessionScope.userLogin == null}">
+                    				<a class="btn btn-success" href="${pageContext.request.contextPath}/login?pageChange=detail">
+                    					<i class="fa-solid fa-share"></i> Share
+                    				</a>
+                    			</c:when>
+                    			<c:otherwise>
+                    				<a class="btn btn-success" data-bs-toggle="modal" data-bs-target="#shareModal">
+                    					<i class="fa-solid fa-share"></i> Share
+                    				</a>
+                    			</c:otherwise>
+                    		</c:choose>
                         </div>
                         <div class="w-auto p-0 ms-3">
-                            <button class="btn btn-success">
-                                <i class="fa-solid fa-plus"></i> Add to favorite
-                            </button>
+                        	<c:choose>
+                        		<c:when test="${sessionScope.userLogin == null}">
+                        			<a class="btn btn-success" href="${pageContext.request.contextPath}/login?pageChange=detail">
+                        				${userFavVid == null ? '<i class="fa-regular fa-bookmark"></i>' : '<i class="fa-solid fa-bookmark"></i>'} Add to favorite
+                        			</a>
+                        		</c:when>
+                        		<c:otherwise>
+                        			<a class="btn btn-success" href="${pageContext.request.contextPath}/movie-detail/favorite">
+                        				${userFavVid == null ? '<i class="fa-regular fa-bookmark"></i>' : '<i class="fa-solid fa-bookmark"></i>'} Add to favorite
+                        			</a>
+                        		</c:otherwise>
+                        	</c:choose>
                         </div>
                         <!-- Modal -->
                         <div class="modal fade" id="shareModal" tabindex="-1" >
@@ -81,12 +104,12 @@
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <form class="container" action="">
-                                        <input class="form-control border-0" type="email" name="" id="" placeholder="Enter Your Friend Email Here">
+                                        <input class="form-control border-0" type="email" name="email" id="" placeholder="Enter Your Friend Email Here">
+	                                    <div class="modal-footer border-0">
+	                                        <button type="button" class="btn btn-success" formaction="/movie-detail/share">Submit</button>
+	                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+	                                    </div>
                                     </form>
-                                    <div class="modal-footer border-0">
-                                        <button type="button" class="btn btn-success">Submit</button>
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    </div>
                                 </div>
                             </div>
                         </div>

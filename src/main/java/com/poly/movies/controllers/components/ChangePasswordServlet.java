@@ -29,8 +29,6 @@ public class ChangePasswordServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		HttpSession s = request.getSession();
-		s.setAttribute("page", "change-password");
 		request.getRequestDispatcher("/views/change-password.jsp").forward(request, response);
 	}
 

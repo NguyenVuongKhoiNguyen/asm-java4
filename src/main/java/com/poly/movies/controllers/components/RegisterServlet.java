@@ -29,10 +29,7 @@ public class RegisterServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		
-		HttpSession s = request.getSession();
-		s.setAttribute("page", "register");
-		
+				
 		request.getRequestDispatcher("/views/register.jsp").forward(request, response);
 	}
 

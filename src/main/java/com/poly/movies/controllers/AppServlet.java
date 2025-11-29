@@ -1,14 +1,11 @@
 package com.poly.movies.controllers;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.poly.movies.models.dao.VideoDAOImpl;
 import com.poly.movies.models.entities.Video;
 
-import jakarta.mail.Session;
-import jakarta.security.auth.message.callback.PrivateKeyCallback.Request;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -19,7 +16,7 @@ import jakarta.servlet.http.HttpSession;
 /**
  * Servlet implementation class AppServlet
  */
-@WebServlet("/app")
+@WebServlet({"/app", "/logout"})
 public class AppServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
     
@@ -43,7 +40,11 @@ public class AppServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		HttpSession s = request.getSession();
-		s.setAttribute("page", "home");
+		
+		String logout = request.getServletPath();
+		if (logout != null && logout.equals("/logout")) {
+			s.removeAttribute("userLogin");
+		}
 		
 		request.setAttribute("trendingList", trendingList);
 		request.setAttribute("top7ImdbList", top7ImdbList);

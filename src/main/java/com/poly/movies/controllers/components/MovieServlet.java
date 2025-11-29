@@ -40,8 +40,6 @@ public class MovieServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		
-		HttpSession s = request.getSession();
-		s.setAttribute("page", "movie");
 		
 		request.setAttribute("videoList", videoList);
 		request.getRequestDispatcher("/views/movie.jsp").forward(request, response);

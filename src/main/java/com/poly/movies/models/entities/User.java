@@ -1,5 +1,7 @@
 package com.poly.movies.models.entities;
 
+import java.util.Date;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -20,4 +22,5 @@ public class User {
 	private String fullname;
 	private String photo;
 	private boolean admin; //1 is admin
+	private Date createdDate;
 }

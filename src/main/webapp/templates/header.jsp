@@ -2,6 +2,15 @@
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
+<!-- 
+	session: stay till the end
+	parameter: stay in 2 simultaneous cycle
+	example:
+		you are at home
+		when you click movie link
+		the home send variable with value to the movie servlet to catch and jsp to render
+		after the movie site, this variable got send from home will be delete
+ -->
 <header class="sticky-top">
 	
 	<c:url var="movieUrl" value="/movie"></c:url>
@@ -36,7 +45,7 @@
 
             <!--Logo-->
             <a class="navbar-brand " href="${indexUrl}">
-                <img class="d-inline-block align-text-top" style="width: 30px; height: 24px;" src="./images/logo/logo.png" alt="">
+                <img class="d-inline-block align-text-top" style="width: 30px; height: 24px;" src="${pageContext.request.contextPath}/images/logo/logo.png" alt="">
                 Zoechip
             </a>
 
@@ -54,12 +63,12 @@
 
                     <!-- Nav Link -->
                     <li class="nav-item">
-                        <a class="nav-link " href="${indexUrl}">Home</a>
+                        <a class="nav-link ${sessionScope.page == 'home' ? 'active' : ''}" href="${indexUrl}">Home</a>
                     </li>
 
                     <!-- Nav Link -->
                     <li class="nav-item">
-                        <a class="nav-link " href="${movieUrl}">Movies</a>
+                        <a class="nav-link ${sessionScope.page == 'movie' ? 'active' : ''}" href="${movieUrl}">Movies</a>
                     </li>
 
                     <!-- Nav Link -->
@@ -91,13 +100,11 @@
 								<a class="nav-link" href="${homeThemeModeUrl}">${sessionScope.themeTxt}</a>		
 							</c:otherwise>
 						</c:choose>
-						
-						
 					</li>
 					
                     <!-- Nav Link Dropdown -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle " data-bs-toggle="dropdown" href="">Account</a>
+                        <a class="nav-link dropdown-toggle ${sessionScope.page == 'login' || sessionScope.page == 'register' || sessionScope.page == 'change-password' ? 'active' : ''}" data-bs-toggle="dropdown" href="">Account</a>
                         <ul class="dropdown-menu dropdown-menu-dark">
                             <li>
                                 <a class="dropdown-item" href="${loginUrl}">Login</a>
@@ -116,15 +123,33 @@
                 </ul>
 
                 <!-- Nav Search -->
-                <form class="d-flex me-5" action="">
+                <form class="d-flex" action="">
                     <input class="form-control me-2" id="search" type="search" name="" placeholder="Search">
                     <button class="btn btn-outline-success" type="submit">Search</button>
                 </form>
 				<!-- Nav User Profile -->
-                <div class="d-flex align-items-center">
-                    <img class="rounded-circle img-fluid" style="width: 40px;" src="${avatarUrl}/avatar.png" alt="">
-                    <p class="m-0 ms-3"><a class="nav-link" href="">No User</a></p>
-                </div>
+		       <ul class="navbar-nav mb-2 mb-lg-0">
+		         <!-- User Profile Dropdown -->
+		         <li class="nav-item dropdown">
+		           <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
+		             data-bs-toggle="dropdown" aria-expanded="false">
+		             <img src="${pageContext.request.contextPath}/images/user-profiles-pics/${sessionScope.userLogin == null ? 'avatar.png' : sessionScope.userLogin.photo}" alt="User" class="rounded-circle me-2" width="30"
+		               height="30">
+		             ${sessionScope.userLogin == null ? 'No User' : sessionScope.userLogin.id}
+		           </a>
+		           <ul class="dropdown-menu dropdown-menu-end">
+		             <li><a class="dropdown-item" href="#">Profile</a></li>
+		             <li>
+		               <hr class="dropdown-divider">
+		             </li>
+		             <li><a class="dropdown-item" href="${loginUrl}">Login</a></li>
+		             <c:if test="${sessionScope.userLogin != null}">
+		             	<li><a class="dropdown-item" href="${pageContext.request.contextPath}/logout">Logout</a></li>
+		             </c:if>
+		           </ul>
+		         </li>
+		       </ul>
+			     
             </div>
         </div>
     </nav>

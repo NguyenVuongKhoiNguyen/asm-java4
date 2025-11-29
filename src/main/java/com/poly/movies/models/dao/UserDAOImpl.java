@@ -3,7 +3,6 @@ package com.poly.movies.models.dao;
 import java.util.List;
 
 import com.poly.movies.models.entities.User;
-import com.poly.movies.models.entities.Video;
 import com.poly.movies.utils.JPA;
 
 import jakarta.persistence.EntityManager;

@@ -27,7 +27,7 @@ public class Video {
 	private String country;
 	private double imdb;
 	private String description;
-	private String link;
+	private String video;
 	private int views;
 	private boolean active;
 	private String production;

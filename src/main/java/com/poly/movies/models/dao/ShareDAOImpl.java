@@ -2,7 +2,6 @@ package com.poly.movies.models.dao;
 
 import java.util.List;
 
-import com.poly.movies.models.entities.Favorite;
 import com.poly.movies.models.entities.Share;
 import com.poly.movies.utils.JPA;
 
@@ -75,7 +74,7 @@ public class ShareDAOImpl implements ShareDAO {
 		List<Share> beanList = null;
 		
 		try {
-			beanList = em.createQuery("select v from User v", Share.class).getResultList();
+			beanList = em.createQuery("select s from Share s", Share.class).getResultList();
 		} catch (Exception ex) {
 			// TODO: handle exception
 			ex.printStackTrace();
@@ -105,5 +104,20 @@ public class ShareDAOImpl implements ShareDAO {
 		return bean;
 		
 	}
-
+	public static void main(String[] args) {
+		//ShareDAOImpl shareDao = new ShareDAOImpl();
+//		List<Share> shareList = shareDao.findAll();
+//		shareList.forEach(s -> {
+//			System.out.println(s);
+//		});
+		
+//		Share share = new Share();
+//		share.setUserId("alice01");
+//		share.setVideoId("V001");
+//		share.setSharedDate(XDate.now());
+//		share.setEmail("georgefloyd@gmail.com");
+//		shareDao.create(share);
+//		System.out.println(share);
+		
+	}
 }

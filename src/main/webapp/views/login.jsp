@@ -4,15 +4,16 @@
 	HttpSession s = request.getSession();
 	
 	String mode = request.getParameter("mode");
-	System.out.println("Theme Mode Var " + mode);
 
+	s.setAttribute("page", "login");
+	
 	if (mode != null && mode.equals("change")) {
 		if (s.getAttribute("theme").equals("dark")) {
 			s.setAttribute("theme", "light");
-			s.setAttribute("themeTxt", "Light Mode");
+			s.setAttribute("themeTxt", "Dark Mode");
 		} else {
 			s.setAttribute("theme", "dark");
-			s.setAttribute("themeTxt", "Dark Mode");
+			s.setAttribute("themeTxt", "Light Mode");
 		}
 	} 
 %>
@@ -34,10 +35,10 @@
 	<section class="container mt-5 d-flex"> <!-- d-flex: !important -->
         <div class="w-auto mx-auto bg-body-secondary p-5 rounded-4">
             <h3>Login form</h3>
-            <form class="mt-3" action="">
-                <input class="form-control" type="text" placeholder="Username" name="username">
+            <form class="mt-3" action="" method="post">
+                <input class="form-control" type="text" placeholder="Username" name="id">
                 <input class="form-control mt-3" type="password" placeholder="Password" name="password">
-                <button class="btn btn-success mt-3 float-end">Login</button>
+                <button class="btn btn-success mt-3 float-end" formaction="${pageContext.request.contextPath}/login">Login</button>
             </form>
         </div>
     </section>

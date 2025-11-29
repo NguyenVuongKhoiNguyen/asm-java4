@@ -2,11 +2,11 @@
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%
+	request.getSession().invalidate(); // clear session
 	HttpSession s = request.getSession();
 	s.setAttribute("theme", "dark");
-	s.setAttribute("themeTxt", "Dark Mode");
+	s.setAttribute("themeTxt", "Light Mode");
 %>
-
 <!DOCTYPE html>
 <html>
 <head>

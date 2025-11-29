@@ -2,8 +2,14 @@ package com.poly.movies.controllers.components;
 
 import java.io.IOException;
 
+import com.poly.movies.models.dao.FavoriteDAOImpl;
+import com.poly.movies.models.dao.ShareDAOImpl;
 import com.poly.movies.models.dao.VideoDAOImpl;
+import com.poly.movies.models.entities.Favorite;
+import com.poly.movies.models.entities.Share;
+import com.poly.movies.models.entities.User;
 import com.poly.movies.models.entities.Video;
+import com.poly.movies.utils.XDate;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -15,14 +21,16 @@ import jakarta.servlet.http.HttpSession;
 /**
  * Servlet implementation class MovieDetailServlet
  */
-@WebServlet("/movie-detail")
+@WebServlet({"/movie-detail", "/movie-detail/*"})
 public class MovieDetailServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
     
 	VideoDAOImpl videoDao = new VideoDAOImpl();
-
-	Video video = null;
+	FavoriteDAOImpl favoriteDao = new FavoriteDAOImpl();
+	ShareDAOImpl shareDao = new ShareDAOImpl();
 	
+	User user = null;
+	Video video = null;
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -36,15 +44,33 @@ public class MovieDetailServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-	
-		HttpSession s = request.getSession();
-		s.setAttribute("page", "movie-detail");
+		Favorite userFavVid = null;
 		
 		String videoId = request.getParameter("id");
+		System.out.println(videoId);
 		if (videoId != null) {
 			video = videoDao.findById(videoId);
+			video.setViews(video.getViews() + 1);
+			videoDao.update(video);
 		}
 		
+		HttpSession session = request.getSession();
+		user = (User) session.getAttribute("userLogin");
+		if (user != null) {
+			userFavVid = favoriteDao.findUserFavoriteVideo(user.getId(), video.getId());
+		}
+		
+		String pathInfo = request.getPathInfo();
+		if (pathInfo != null && pathInfo.equals("/favorite")) {
+			Favorite favorite = new Favorite();
+			favorite.setUserId(user.getId());
+			favorite.setVideoId(video.getId());
+			favorite.setLikedDate(XDate.now());
+			favoriteDao.create(favorite);
+			userFavVid = favoriteDao.findUserFavoriteVideo(user.getId(), video.getId());
+		}
+		
+		request.setAttribute("userFavVid", userFavVid);
 		request.setAttribute("video", video);
 		request.getRequestDispatcher("/views/movie-detail.jsp").forward(request, response);
 	}
@@ -54,7 +80,20 @@ public class MovieDetailServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		doGet(request, response);
+		Favorite userFavVid = null;
+		
+		String pathInfo = request.getPathInfo();
+		if (pathInfo != null && pathInfo.equals("/share")) {
+			String email = request.getParameter("email");
+			Share share = new Share();
+			share.setUserId(user.getId());
+			share.setVideoId(video.getId());
+			share.setEmail(email);
+			shareDao.create(share);
+			request.setAttribute("userFavVid", userFavVid);
+			request.setAttribute("video", video);
+			request.getRequestDispatcher("/views/movie-detail.jsp").forward(request, response);
+		}		
 	}
 
 }

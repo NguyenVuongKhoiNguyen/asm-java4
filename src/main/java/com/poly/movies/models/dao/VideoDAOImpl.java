@@ -7,7 +7,6 @@ import com.poly.movies.utils.JPA;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.StoredProcedureQuery;
-import jakarta.persistence.TypedQuery;
 
 public class VideoDAOImpl implements VideoDAO {
 	
