@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%
 	HttpSession s = request.getSession();
 	
@@ -39,6 +40,9 @@
                 <input class="form-control" type="text" placeholder="Username" name="id">
                 <input class="form-control mt-3" type="password" placeholder="Password" name="password">
                 <button class="btn btn-success mt-3 float-end" formaction="${pageContext.request.contextPath}/login">Login</button>
+            	<c:if test="${message != null}">
+            		<p class="text-danger">${message}</p>
+            	</c:if>
             </form>
         </div>
     </section>

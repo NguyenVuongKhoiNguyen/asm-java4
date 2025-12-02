@@ -2,7 +2,12 @@ package com.poly.movies.controllers.components;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.ConvertUtils;
@@ -30,7 +35,10 @@ public class VideoServlet extends HttpServlet implements CrudController {
        
 	VideoDAOImpl videoDao = new VideoDAOImpl();
 	
-	List<Video> videoList = videoDao.findAll();
+	Set<Video> videoSet = videoDao.getAllFavsAndShares();
+	
+	List<Video> videoList = new ArrayList<>(videoSet);
+
 	
 	Video editVideo = null;
 	
@@ -49,7 +57,11 @@ public class VideoServlet extends HttpServlet implements CrudController {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-				
+		
+		sortVideoByShareDESC();
+		for(Video v : videoList)
+			System.out.println(v.getId() + " - " + v.getSharesSize());
+		
 		String pathInfo = request.getPathInfo();
 		
 		if (pathInfo != null) {
@@ -60,12 +72,17 @@ public class VideoServlet extends HttpServlet implements CrudController {
 			case "/table-delete":
 				tableDelete(request, response);
 				break;
+			case "/most-views":
+				break;
+			case "/most-favs":
+				break;
+			case "/most-shares":
+				break;
 			}
 		}
 		
-		
 		request.setAttribute("newVideoId", generateNewVideoId());
-		request.setAttribute("videoList", videoList);
+		request.setAttribute("videoSet", videoSet);
 		request.getRequestDispatcher("/views/video-dashboard.jsp").forward(request, response);
 	}
 
@@ -104,7 +121,7 @@ public class VideoServlet extends HttpServlet implements CrudController {
 	
 	private String generateNewVideoId() {
 
-		String lastId = videoList.get(videoList.size() - 1).getId();
+		String lastId = videoDao.findAll().get(videoDao.findAll().size() - 1).getId();
 		int newIdDigit = Integer.parseInt(lastId.substring(1)) + 1;
 		if (newIdDigit < 10) {
 			return "V00" + newIdDigit;
@@ -148,7 +165,7 @@ public class VideoServlet extends HttpServlet implements CrudController {
 		video.setVideo(videoPart.getSubmittedFileName());
 		
 		videoDao.create(video);
-		videoList = videoDao.findAll();
+		videoSet = videoDao.getAllFavsAndShares();
 		
 	}
 
@@ -170,7 +187,7 @@ public class VideoServlet extends HttpServlet implements CrudController {
 		}
 		
 		Video vi = null;
-		for (Video v : videoList) {
+		for (Video v : videoSet) {
 			if (v.getId().equals(video.getId())) {
 				vi = v;
 				break;
@@ -181,17 +198,17 @@ public class VideoServlet extends HttpServlet implements CrudController {
 		video.setVideo(vi.getVideo());
 		
 		videoDao.update(video);
-		videoList = videoDao.findAll();
+		videoSet = videoDao.getAllFavsAndShares();
 	}
 
 	@Override
 	public void delete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		String id = request.getParameter("id");
-		for (Video video : videoList) {
+		for (Video video : videoSet) {
 			if (video.getId().equals(id)) {
 				videoDao.delete(id);
-				videoList = videoDao.findAll();
+				videoSet = videoDao.getAllFavsAndShares();
 				break;
 			}
 		}
@@ -201,7 +218,7 @@ public class VideoServlet extends HttpServlet implements CrudController {
 	public void edit(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		String id = request.getParameter("id");
-		for (Video video : videoList) {
+		for (Video video : videoSet) {
 			if (video.getId().equals(id)) {
 				editVideo = video;
 				request.setAttribute("editVideo", editVideo);
@@ -216,4 +233,18 @@ public class VideoServlet extends HttpServlet implements CrudController {
 		delete(request, response);
 	}
 	
-}
+	public void sortVideoByFavoriteASC() {
+		videoList.sort(Comparator.comparing(Video::getFavoritesSize));
+	}
+	public void sortVideoByFavoriteDESC() {
+		videoList.sort(Comparator.comparing(Video::getFavoritesSize).reversed());
+	}
+	
+	public void sortVideoBySharesASC() {
+		videoList.sort((video, other) -> Integer.compare(video.getSharesSize(), other.getSharesSize()));
+	}
+	
+	public void sortVideoByShareDESC() {
+		videoList.sort((video, other) -> {return Integer.compare(other.getSharesSize(), video.getSharesSize());});
+	}
+ }

@@ -23,7 +23,7 @@ public class LoginServlet extends HttpServlet {
 	User user = null;
 	UserDAOImpl userDao = new UserDAOImpl();
 	
-	String pageDetail = null;
+	String previousPage = null;
 	
     /**
      * @see HttpServlet#HttpServlet()
@@ -38,8 +38,7 @@ public class LoginServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		pageDetail = request.getParameter("pageChange");
-		System.out.println(pageDetail);
+		previousPage = request.getParameter("previousPage");
 		request.getRequestDispatcher("/views/login.jsp").forward(request, response);
 	}
 
@@ -51,36 +50,45 @@ public class LoginServlet extends HttpServlet {
 		String id = request.getParameter("id");
 		String password = request.getParameter("password");
 		
-		if (id == null || password == null || id.isEmpty() || id.isEmpty()) {
+		if (id == null || password == null || id.isEmpty() || password.isEmpty()) {
 			doGet(request, response);
+			return; //if not, the rest of the method still run event request depatcher or redirect are being execute
 		}
 		else {
 			user = userDao.findById(id);
 		}
 		
 		if (user == null) {
-			System.out.println("Wrong username");
+			request.setAttribute("message", "Wrong Username!!!");
 			doGet(request, response);
+			return;
 		}
 		
 		if (!user.getPassword().equals(password)) {
-			System.out.println("Wrong password");
+			request.setAttribute("message", "Wrong Password!!!");
 			doGet(request, response);
+			return;
 		}
 		
 		HttpSession session = request.getSession();
 		session.setAttribute("userLogin", userDao.findById(id));
-		if (!user.isAdmin()) {
-			if (pageDetail != null) {
-				response.sendRedirect(request.getContextPath() + "/movie-detail");
-			} else {
-				response.sendRedirect(request.getContextPath() + "/app");
-			}
-			pageDetail = null;
+		
+		if (user.isAdmin()) {
+			response.sendRedirect(request.getContextPath() + "/video");
 			return;
 		}
 		
-		response.sendRedirect(request.getContextPath()+ "/video");
+		if (previousPage != null) {
+			if (previousPage.equals("movie-detail")) {
+				response.sendRedirect(request.getContextPath() + "/movie-detail");
+			}
+			if (previousPage.equals("movie")) {
+				response.sendRedirect(request.getContextPath() + "/movie");
+			}
+		} else {
+			response.sendRedirect(request.getContextPath() + "/app");
+		}
+		previousPage = null;
 	}
 
 }

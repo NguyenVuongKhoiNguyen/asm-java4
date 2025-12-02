@@ -46,8 +46,9 @@
 	                <a class="list-group-item list-group-item-action ps-4" href="#">Year</a>
 	                <a class="list-group-item list-group-item-action ps-4" href="#">All time</a>
 	            </div>
-	            <a class="list-group-item list-group-item-action">Most Like</a>
-	            <a class="list-group-item list-group-item-action">Most Share</a>
+	            <a class="list-group-item list-group-item-action">Most Favorites</a>
+	            <a class="list-group-item list-group-item-action">Most Shares</a>
+	            <a class="list-group-item list-group-item-action">Most Views</a>
 	          </div>
 	        </div>
 	      </div>
@@ -181,12 +182,12 @@
 	                  <th>Active</th>
 	                  <th>Production</th>
 	                  <th>Trending</th>
-	                  <th>Like</th>
-	                  <th>Dislike</th>
+	                  <th>Favorite</th>
+	                  <th>Share</th>
 	                </tr>
 	              </thead>
 	              <tbody>
-	              	<c:forEach var="video" items="${videoList}" varStatus="status">
+	              	<c:forEach var="video" items="${videoSet}" varStatus="status">
 		                <tr>
 		                  <td>${status.count}</td>
 		                  <td>${video.id}</td>
@@ -203,8 +204,8 @@
 		                  <td>${video.active == true ? '✔' : 'X'}</td>
 		                  <td>${video.production}</td>
 		                  <td>${video.trending == true ?  '✔' :  'X'}</td>
-   		                  <td>${video.likes}</td>
-   		                  <td>${video.dislikes}</td>
+   		                  <td>${video.favoritesSize}</td>
+   		                  <td>${video.sharesSize}</td>
 		                  <td>
 							<a href="${videoUrl}/edit?id=${video.id}" class="btn btn-warning">Edit</a>
 							<a href="${videoUrl}/table-delete?id=${video.id}" class="btn btn-danger">Delete</a>

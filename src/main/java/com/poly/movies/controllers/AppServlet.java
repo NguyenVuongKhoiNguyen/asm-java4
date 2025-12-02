@@ -39,11 +39,22 @@ public class AppServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		HttpSession s = request.getSession();
 		
 		String logout = request.getServletPath();
 		if (logout != null && logout.equals("/logout")) {
+			
+			HttpSession s = request.getSession();
 			s.removeAttribute("userLogin");
+			
+			String page = (String) s.getAttribute("page");
+			if (page.equals("movie-detail")) {
+				response.sendRedirect(request.getContextPath() + "/movie-detail");
+				return;
+			}
+			if (page.equals("movie")) {
+				response.sendRedirect(request.getContextPath() + "/movie");
+				return;
+			}
 		}
 		
 		request.setAttribute("trendingList", trendingList);

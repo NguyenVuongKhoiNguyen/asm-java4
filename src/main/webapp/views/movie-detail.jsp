@@ -51,7 +51,7 @@
                         <img class="p-0" src="${posterUrl}/${video.poster}" alt="">
                     </div>
                     <div class="row mt-3">
-                        <p class=" m-0 p-0">${video.likes} <span class="text-success"><i class="fa-solid fa-thumbs-up"></i></span> • ${video.dislikes} <span class="text-danger"><i class="fa-solid fa-thumbs-down"></i></span> • ${video.views} Views</p>
+                        <p class=" m-0 p-0">${favorites} <span class="text-success"><i class="fa-solid fa-bookmark"></i></span> • ${shares} <span class="text-danger"><i class="fa-solid fa-share"></i></span> • ${video.views} Views</p>
                     </div>
                     <div class="row py-3">
                         <hr class=" m-0">
@@ -70,7 +70,7 @@
                         	%>
                     		<c:choose>
                     			<c:when test="${sessionScope.userLogin == null}">
-                    				<a class="btn btn-success" href="${pageContext.request.contextPath}/login?pageChange=detail">
+                    				<a class="btn btn-success" href="${pageContext.request.contextPath}/login?previousPage=movie-detail">
                     					<i class="fa-solid fa-share"></i> Share
                     				</a>
                     			</c:when>
@@ -84,7 +84,7 @@
                         <div class="w-auto p-0 ms-3">
                         	<c:choose>
                         		<c:when test="${sessionScope.userLogin == null}">
-                        			<a class="btn btn-success" href="${pageContext.request.contextPath}/login?pageChange=detail">
+                        			<a class="btn btn-success" href="${pageContext.request.contextPath}/login?previousPage=movie-detail">
                         				${userFavVid == null ? '<i class="fa-regular fa-bookmark"></i>' : '<i class="fa-solid fa-bookmark"></i>'} Add to favorite
                         			</a>
                         		</c:when>
@@ -103,10 +103,11 @@
                                         <h1 class="modal-title fs-5 " id="exampleModalLabel">Enter Email</h1>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
-                                    <form class="container" action="">
+                                    <form class="container" method="post">
                                         <input class="form-control border-0" type="email" name="email" id="" placeholder="Enter Your Friend Email Here">
 	                                    <div class="modal-footer border-0">
-	                                        <button type="button" class="btn btn-success" formaction="/movie-detail/share">Submit</button>
+	                                    	<!-- formaction only work with type submit -->
+	                                        <button type="submit" class="btn btn-success" formaction="${pageContext.request.contextPath}/movie-detail/share">Submit</button>
 	                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 	                                    </div>
                                     </form>

@@ -105,7 +105,7 @@
                     <!-- Nav Link Dropdown -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle ${sessionScope.page == 'login' || sessionScope.page == 'register' || sessionScope.page == 'change-password' ? 'active' : ''}" data-bs-toggle="dropdown" href="">Account</a>
-                        <ul class="dropdown-menu dropdown-menu-dark">
+                        <ul class="dropdown-menu">
                             <li>
                                 <a class="dropdown-item" href="${loginUrl}">Login</a>
                             </li>
@@ -138,12 +138,22 @@
 		             ${sessionScope.userLogin == null ? 'No User' : sessionScope.userLogin.id}
 		           </a>
 		           <ul class="dropdown-menu dropdown-menu-end">
-		             <li><a class="dropdown-item" href="#">Profile</a></li>
-		             <li>
-		               <hr class="dropdown-divider">
-		             </li>
-		             <li><a class="dropdown-item" href="${loginUrl}">Login</a></li>
+		           	<c:choose>
+		           		<c:when test="${sessionScope.page == 'movie'}">
+		           			<li><a class="dropdown-item" href="${loginUrl}?previousPage=movie">Login</a></li>
+		           		</c:when>
+		           		<c:when test="${sessionScope.page == 'movie-detail'}">
+		           			<li><a class="dropdown-item" href="${loginUrl}?previousPage=movie-detail">Login</a></li>
+		           		</c:when>
+		           		<c:otherwise>
+		           			<li><a class="dropdown-item" href="${loginUrl}">Login</a></li>
+		           		</c:otherwise>
+		           	</c:choose>
 		             <c:if test="${sessionScope.userLogin != null}">
+		             	<li>
+		               		<hr class="dropdown-divider">
+		             	</li>
+		             	<li><a class="dropdown-item" href="#">Profile</a></li>
 		             	<li><a class="dropdown-item" href="${pageContext.request.contextPath}/logout">Logout</a></li>
 		             </c:if>
 		           </ul>

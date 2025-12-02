@@ -29,8 +29,10 @@ public class MovieDetailServlet extends HttpServlet {
 	FavoriteDAOImpl favoriteDao = new FavoriteDAOImpl();
 	ShareDAOImpl shareDao = new ShareDAOImpl();
 	
-	User user = null;
 	Video video = null;
+	User user = null;
+	int favorites = 0;
+	int shares = 0;
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -47,9 +49,10 @@ public class MovieDetailServlet extends HttpServlet {
 		Favorite userFavVid = null;
 		
 		String videoId = request.getParameter("id");
-		System.out.println(videoId);
 		if (videoId != null) {
-			video = videoDao.findById(videoId);
+			video = videoDao.getFavAndShare(videoId);
+			favorites = video.getFavorites().size();
+			shares = video.getShares().size();
 			video.setViews(video.getViews() + 1);
 			videoDao.update(video);
 		}
@@ -70,6 +73,8 @@ public class MovieDetailServlet extends HttpServlet {
 			userFavVid = favoriteDao.findUserFavoriteVideo(user.getId(), video.getId());
 		}
 		
+		request.setAttribute("favorites", favorites);
+		request.setAttribute("shares", shares);
 		request.setAttribute("userFavVid", userFavVid);
 		request.setAttribute("video", video);
 		request.getRequestDispatcher("/views/movie-detail.jsp").forward(request, response);
@@ -83,17 +88,29 @@ public class MovieDetailServlet extends HttpServlet {
 		Favorite userFavVid = null;
 		
 		String pathInfo = request.getPathInfo();
-		if (pathInfo != null && pathInfo.equals("/share")) {
-			String email = request.getParameter("email");
+		
+		if (pathInfo == null) {
+			doGet(request, response);
+			return;
+		}
+		
+		String email = request.getParameter("email");
+		if (email == null || email.isBlank()) {
+			doGet(request, response);
+			return;
+		}
+		
+		if (pathInfo.equals("/share")) {
 			Share share = new Share();
 			share.setUserId(user.getId());
 			share.setVideoId(video.getId());
+			share.setSharedDate(XDate.now());
 			share.setEmail(email);
 			shareDao.create(share);
-			request.setAttribute("userFavVid", userFavVid);
-			request.setAttribute("video", video);
-			request.getRequestDispatcher("/views/movie-detail.jsp").forward(request, response);
-		}		
+		}
+		request.setAttribute("userFavVid", userFavVid);
+		request.setAttribute("video", video);
+		request.getRequestDispatcher("/views/movie-detail.jsp").forward(request, response);
 	}
 
 }
