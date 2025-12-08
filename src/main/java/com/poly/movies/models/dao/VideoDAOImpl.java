@@ -170,14 +170,13 @@ public class VideoDAOImpl implements VideoDAO {
 	}
 
 	@Override
-	public Set<Video> getAllFavsAndShares() {
+	public List<Video> getAllFavsAndShares() {
 		// TODO Auto-generated method stub
 		EntityManager em = JPA.openEntityManager();
-		Set<Video> beanSet = null;
+		List<Video> beanList = null;
 
 		try {
-			List<Video> beanList = em.createQuery("SELECT v FROM Video v LEFT JOIN FETCH v.favorites LEFT JOIN FETCH v.shares", Video.class).getResultList();
-			beanSet = new HashSet<>(beanList);
+			beanList = em.createQuery("SELECT DISTINCT v FROM Video v LEFT JOIN FETCH v.favorites LEFT JOIN FETCH v.shares", Video.class).getResultList();
 		} catch (Exception ex) {
 			// TODO: handle exception
 			ex.printStackTrace();
@@ -185,7 +184,7 @@ public class VideoDAOImpl implements VideoDAO {
 			em.close();
 		}
 		
-		return beanSet;
+		return beanList;
 	}
 
 	@Override
@@ -195,7 +194,7 @@ public class VideoDAOImpl implements VideoDAO {
 		Video video = null;
 
 		try {
-			video = em.createQuery("SELECT v FROM Video v LEFT JOIN FETCH v.favorites LEFT JOIN FETCH v.shares WHERE v.id = :id", Video.class)
+			video = em.createQuery("SELECT DISTINCT v FROM Video v LEFT JOIN FETCH v.favorites LEFT JOIN FETCH v.shares WHERE v.id = :id", Video.class)
 					.setParameter("id", id)
 					.getSingleResult();
 		} catch (Exception ex) {
@@ -210,12 +209,12 @@ public class VideoDAOImpl implements VideoDAO {
 	
 	public static void main(String[] args) {
 		VideoDAOImpl videoDao = new VideoDAOImpl();
-		Video video = videoDao.getFavAndShare("V001");
-		System.out.println(video.getTitle() + " - " + video.getFavorites().size() + " - " + video.getShares().size());
+//		Video video = videoDao.getFavAndShare("V001");
+//		System.out.println(video.getTitle() + " - " + video.getFavorites().size() + " - " + video.getShares().size());
 		
-//		Set<Video> videoSet = videoDao.getAllFavsAndShares();
-//		videoSet.forEach(v -> {
-//			System.out.println(v.getId() + " - " + v.getFavorites().size() + " - " + v.getShares().size());
-//		});
+		List<Video> videoSet = videoDao.getAllFavsAndShares();
+		videoSet.forEach(v -> {
+			System.out.println(v.getId() + " - " + v.getFavorites().size() + " - " + v.getShares().size());
+		});
 	}
 }

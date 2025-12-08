@@ -9,6 +9,6 @@ public interface VideoDAO extends CrudDAO<Video, String> {
 	List<Video> getTrendingVideos();
 	List<Video> getTop7ImdbScore();
 	List<Video> getTop7RecentReleased();
-	Set<Video> getAllFavsAndShares();
+	List<Video> getAllFavsAndShares();
 	Video getFavAndShare(String id);
 }

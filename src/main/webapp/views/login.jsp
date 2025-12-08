@@ -37,8 +37,12 @@
         <div class="w-auto mx-auto bg-body-secondary p-5 rounded-4">
             <h3>Login form</h3>
             <form class="mt-3" action="" method="post">
-                <input class="form-control" type="text" placeholder="Username" name="id">
-                <input class="form-control mt-3" type="password" placeholder="Password" name="password">
+                <input class="form-control" type="text" placeholder="Username" name="id" value="${username}">
+                <input class="form-control mt-3" type="password" placeholder="Password" name="password" value="${password}">
+                <div class="d-flex gap-1 mt-3">
+					<input class="form-check" type="checkbox" name="rememberMe" id="rememberMe" value="checked" checked>
+                	<label for="rememberMe">Remember Me</label>
+                </div>
                 <button class="btn btn-success mt-3 float-end" formaction="${pageContext.request.contextPath}/login">Login</button>
             	<c:if test="${message != null}">
             		<p class="text-danger">${message}</p>

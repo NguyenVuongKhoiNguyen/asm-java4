@@ -30,9 +30,18 @@
 	      <!-- Sidebar -->
 	      <div class="col-3">
 	        <div class="mt-3 position-sticky" style="top: 70px;">
-	          <form class="d-flex justify-content-between mb-3" action="">
-	            <input class="form-control w-75" type="search" name="" placeholder="Enter Name">
-	            <button class="btn btn-outline-success"><i class="fa-solid fa-magnifying-glass"></i></button>
+	          <form class="d-flex justify-content-between mb-3" action="${pageContext.request.contextPath}/user/search" method="post">
+	          	<div class="d-flex flex-column w-100 gap-2">
+		          	<div class="d-flex gap-2">
+			            <input class="form-control" type="search" name="videoId" placeholder="Enter Video Id" value="${searchVideoId == null ? '' : searchVideoId}">
+			            <button type="submit" class="btn btn-outline-success"><i class="fa-solid fa-magnifying-glass"></i></button>
+		          	</div>
+		   			<select class="form-select" name="findBy">
+		   				<option value="" disabled selected>Find By</option>
+		   				<option value="favorite">Favorite</option>
+		   				<option value="share">Share</option>
+		   			</select>
+	          	</div>
 	          </form>
 	          <div class="list-group position-sticky" style="top: 55px;">
 	            <a class="list-group-item list-group-item-action" data-bs-toggle="collapse" href="#menuProducts">
@@ -76,7 +85,7 @@
 	              
 	              <div class="mb-3">
 	                <label for="photo" class="form-label">Photo</label>
-	                <input class="form-control" type="file" id="photo" name="photo">
+	                <input class="form-control" type="file" id="photo" name="photo" ${editUser != null ? 'disabled' : '' }>
 	              </div>
 	              
 	              <div class="mb-3">
@@ -124,24 +133,45 @@
 	                  <th>Photo</th>
 	                  <th>Admin</th>
 	                </tr>
-	              </thead>
-	              <tbody>
-	              	<c:forEach var="user" items="${userList}" varStatus="status">
-		                <tr>
-		                  <td>${status.count}</td>
-		                  <td><fmt:formatDate value="${user.createdDate}" pattern="dd/MM/yyyy"/></td>
-		                  <td>${user.id}</td>
-		                  <td>${user.password}</td>
-		                  <td>${user.email}</td>
-		                  <td>${user.fullname}</td>
-		                  <td>${user.photo}</td>						
-		                  <td>${user.admin == true ? '✔' : 'X'}</td>   		                  
-		                  <td>
-							<a href="${userUrl}/edit?id=${user.id}" class="btn btn-warning">Edit</a>
-							<a href="${userUrl}/table-delete?id=${user.id}" class="btn btn-danger">Delete</a>
-		                  </td>
-		                </tr>
-	              	</c:forEach>
+	              </thead id="userTable"> 
+	              	 <c:choose>
+	              		<c:when test="${foundedUsers != null}">
+	              			<c:forEach var="user" items="${foundedUsers}" varStatus="status">
+				                <tr>
+				                  <td>${status.count}</td>
+				                  <td><fmt:formatDate value="${user.createdDate}" pattern="dd/MM/yyyy"/></td>
+				                  <td>${user.id}</td>
+				                  <td>${user.password}</td>
+				                  <td>${user.email}</td>
+				                  <td>${user.fullname}</td>
+				                  <td>${user.photo}</td>						
+				                  <td>${user.admin == true ? '✔' : 'X'}</td>   		                  
+				                  <td>
+									<a href="${userUrl}/edit?id=${user.id}" class="btn btn-warning">Edit</a>
+									<a href="${userUrl}/table-delete?id=${user.id}" class="btn btn-danger">Delete</a>
+				                  </td>
+				                </tr>
+			              	</c:forEach>
+	              		</c:when>
+	              		<c:otherwise>
+	              			<c:forEach var="user" items="${userList}" varStatus="status">
+				                <tr>
+				                  <td>${status.count}</td>
+				                  <td><fmt:formatDate value="${user.createdDate}" pattern="dd/MM/yyyy"/></td>
+				                  <td>${user.id}</td>
+				                  <td>${user.password}</td>
+				                  <td>${user.email}</td>
+				                  <td>${user.fullname}</td>
+				                  <td>${user.photo}</td>						
+				                  <td>${user.admin == true ? '✔' : 'X'}</td>   		                  
+				                  <td>
+									<a href="${userUrl}/edit?id=${user.id}" class="btn btn-warning">Edit</a>
+									<a href="${userUrl}/table-delete?id=${user.id}" class="btn btn-danger">Delete</a>
+				                  </td>
+				                </tr>
+			              	</c:forEach>
+	              		</c:otherwise>
+	              	</c:choose>
 	              </tbody>
 	            </table>
 	          </div>
@@ -150,8 +180,13 @@
 	    </div>
 	</div>
 				
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-     			 integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous">
+		fetch("user").then(res => res.json()).then(data => {
+			data.forEach((u) => {
+				console.log(u);
+			});
+		});
+
 	</script>
 </body>
 </html>

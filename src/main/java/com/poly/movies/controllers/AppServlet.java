@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import com.poly.movies.models.dao.VideoDAOImpl;
+import com.poly.movies.models.entities.User;
 import com.poly.movies.models.entities.Video;
 
 import jakarta.servlet.ServletException;
@@ -21,6 +22,7 @@ public class AppServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
     
 	VideoDAOImpl videoDao = new VideoDAOImpl();
+	
 	
 	List<Video> trendingList = videoDao.getTrendingVideos();
 	List<Video> top7ImdbList = videoDao.getTop7ImdbScore();
@@ -40,11 +42,13 @@ public class AppServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		
+		HttpSession s = request.getSession(false);
+		
 		String logout = request.getServletPath();
 		if (logout != null && logout.equals("/logout")) {
 			
-			HttpSession s = request.getSession();
 			s.removeAttribute("userLogin");
+			if (s.getAttribute("isAdmin") != null) s.removeAttribute("isAdmin");
 			
 			String page = (String) s.getAttribute("page");
 			if (page.equals("movie-detail")) {
@@ -68,7 +72,6 @@ public class AppServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		doGet(request, response);
 	}
 
 }

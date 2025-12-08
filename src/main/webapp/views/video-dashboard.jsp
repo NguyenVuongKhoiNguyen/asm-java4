@@ -32,23 +32,36 @@
 	      <!-- Sidebar -->
 	      <div class="col-3">
 	        <div class="mt-3 position-sticky" style="top: 70px;">
-	          <form class="d-flex justify-content-between mb-3" action="">
-	            <input class="form-control w-75" type="search" name="" placeholder="Enter Name">
-	            <button class="btn btn-outline-success"><i class="fa-solid fa-magnifying-glass"></i></button>
+	          <form class="d-flex justify-content-between mb-3" action="${pageContext.request.contextPath}/video/search" method="post">
+	          	<div class="d-flex flex-column w-100 gap-2">
+		          	<div class="d-flex gap-2">
+			            <input class="form-control" type="search" name="userFullname" placeholder="Enter Name" value="${searchUserFullname == null ? '' : searchUserFullname}">
+			            <button type="submit" class="btn btn-outline-success"><i class="fa-solid fa-magnifying-glass"></i></button>
+		          	</div>
+		   			<select class="form-select" name="findBy">
+		   				<option value="" disabled selected>Find By</option>
+		   				<option value="favorite">Favorite</option>
+		   				<option value="share">Share</option>
+		   			</select>
+	          	</div>
 	          </form>
 	          <div class="list-group position-sticky" style="top: 55px;">
-	            <a class="list-group-item list-group-item-action" data-bs-toggle="collapse" href="#menuProducts">
-	                Filter By Released Date ▼
+	            <a class="list-group-item list-group-item-action" data-bs-toggle="collapse" href="#desc">
+	                DESC Sorted By ▼
 	            </a>
-	            <div class="collapse" id="menuProducts">
-	                <a class="list-group-item list-group-item-action ps-4" href="#">Date</a>
-	                <a class="list-group-item list-group-item-action ps-4" href="#">Month</a>
-	                <a class="list-group-item list-group-item-action ps-4" href="#">Year</a>
-	                <a class="list-group-item list-group-item-action ps-4" href="#">All time</a>
+	            <div class="collapse" id="desc">
+	                <a class="list-group-item list-group-item-action ps-4" href="${pageContext.request.contextPath}/video/desc-most-views">Views</a>
+	                <a class="list-group-item list-group-item-action ps-4" href="${pageContext.request.contextPath}/video/desc-most-favs">Favorites</a>
+	                <a class="list-group-item list-group-item-action ps-4" href="${pageContext.request.contextPath}/video/desc-most-shares">Shares</a>
 	            </div>
-	            <a class="list-group-item list-group-item-action">Most Favorites</a>
-	            <a class="list-group-item list-group-item-action">Most Shares</a>
-	            <a class="list-group-item list-group-item-action">Most Views</a>
+	            <a class="list-group-item list-group-item-action" data-bs-toggle="collapse" href="#asc">
+	                ASC Sorted By ▼
+	            </a>
+	            <div class="collapse" id="asc">
+	                <a class="list-group-item list-group-item-action ps-4" href="${pageContext.request.contextPath}/video/asc-most-views">Views</a>
+	                <a class="list-group-item list-group-item-action ps-4" href="${pageContext.request.contextPath}/video/asc-most-favs">Favorites</a>
+	                <a class="list-group-item list-group-item-action ps-4" href="${pageContext.request.contextPath}/video/asc-most-shares">Shares</a>
+	            </div>
 	          </div>
 	        </div>
 	      </div>
@@ -187,31 +200,62 @@
 	                </tr>
 	              </thead>
 	              <tbody>
-	              	<c:forEach var="video" items="${videoSet}" varStatus="status">
-		                <tr>
-		                  <td>${status.count}</td>
-		                  <td>${video.id}</td>
-		                  <td>${fn:length(video.title) > 20 ? fn:substring(video.title, 0, 20) : video.title}</td>
-		                  <td>${video.poster}</td>
-		                  <td>${video.duration}</td>
-		                  <td><fmt:formatDate value="${video.releasedDate}" pattern="dd/MM/yyyy"/></td>
-		                  <td>${video.genre}</td>
-		                  <td>${video.country}</td>
-		                  <td>${video.imdb}</td>
-		                  <td>${fn:length(video.description) > 20 ? fn:substring(video.description, 0, 20) : video.description}</td>
-		                  <td>${video.video}</td>
-		                  <td>${video.views}</td>
-		                  <td>${video.active == true ? '✔' : 'X'}</td>
-		                  <td>${video.production}</td>
-		                  <td>${video.trending == true ?  '✔' :  'X'}</td>
-   		                  <td>${video.favoritesSize}</td>
-   		                  <td>${video.sharesSize}</td>
-		                  <td>
-							<a href="${videoUrl}/edit?id=${video.id}" class="btn btn-warning">Edit</a>
-							<a href="${videoUrl}/table-delete?id=${video.id}" class="btn btn-danger">Delete</a>
-		                  </td>
-		                </tr>
-	              	</c:forEach>
+	              	<c:choose>
+	              		<c:when test="${foundedVideos != null}">
+	              			<c:forEach var="video" items="${foundedVideos}" varStatus="status">
+				                <tr>
+				                  <td>${status.count}</td>
+				                  <td>${video.id}</td>
+				                  <td>${fn:length(video.title) > 20 ? fn:substring(video.title, 0, 20) : video.title}</td>
+				                  <td>${video.poster}</td>
+				                  <td>${video.duration}</td>
+				                  <td><fmt:formatDate value="${video.releasedDate}" pattern="dd/MM/yyyy"/></td>
+				                  <td>${video.genre}</td>
+				                  <td>${video.country}</td>
+				                  <td>${video.imdb}</td>
+				                  <td>${fn:length(video.description) > 20 ? fn:substring(video.description, 0, 20) : video.description}</td>
+				                  <td>${video.video}</td>
+				                  <td>${video.views}</td>
+				                  <td>${video.active == true ? '✔' : 'X'}</td>
+				                  <td>${video.production}</td>
+				                  <td>${video.trending == true ?  '✔' :  'X'}</td>
+			  		                  <td>${video.favoritesSize}</td>
+			  		                  <td>${video.sharesSize}</td>
+				                  <td>
+									<a href="${videoUrl}/edit?id=${video.id}" class="btn btn-warning">Edit</a>
+									<a href="${videoUrl}/table-delete?id=${video.id}" class="btn btn-danger">Delete</a>
+				                  </td>
+				                </tr>
+			              	</c:forEach>
+	              		</c:when>
+	              		<c:otherwise>
+	              			<c:forEach var="video" items="${videoList}" varStatus="status">
+				                <tr>
+				                  <td>${status.count}</td>
+				                  <td>${video.id}</td>
+				                  <td>${fn:length(video.title) > 20 ? fn:substring(video.title, 0, 20) : video.title}</td>
+				                  <td>${video.poster}</td>
+				                  <td>${video.duration}</td>
+				                  <td><fmt:formatDate value="${video.releasedDate}" pattern="dd/MM/yyyy"/></td>
+				                  <td>${video.genre}</td>
+				                  <td>${video.country}</td>
+				                  <td>${video.imdb}</td>
+				                  <td>${fn:length(video.description) > 20 ? fn:substring(video.description, 0, 20) : video.description}</td>
+				                  <td>${video.video}</td>
+				                  <td>${video.views}</td>
+				                  <td>${video.active == true ? '✔' : 'X'}</td>
+				                  <td>${video.production}</td>
+				                  <td>${video.trending == true ?  '✔' :  'X'}</td>
+			  		                  <td>${video.favoritesSize}</td>
+			  		                  <td>${video.sharesSize}</td>
+				                  <td>
+									<a href="${videoUrl}/edit?id=${video.id}" class="btn btn-warning">Edit</a>
+									<a href="${videoUrl}/table-delete?id=${video.id}" class="btn btn-danger">Delete</a>
+				                  </td>
+				                </tr>
+			              	</c:forEach>
+	              		</c:otherwise>
+	              	</c:choose>
 	              </tbody>
 	            </table>
 	          </div>

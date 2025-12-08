@@ -8,9 +8,11 @@
 	      	<i class="fa-solid fa-bars"></i>
 	      </button>
 	
-	      <a class="navbar-brand" href="#">
-				
-	      </a>
+	      <a class="navbar-brand " href="${pageContext.request.contextPath}/app">
+              <img class="d-inline-block align-text-top" style="width: 30px; height: 24px;" src="${pageContext.request.contextPath}/images/logo/logo.png" alt="">
+              Zoechip
+          </a>
+          
 	
 	      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
 	        <span class="navbar-toggler-icon"></span>

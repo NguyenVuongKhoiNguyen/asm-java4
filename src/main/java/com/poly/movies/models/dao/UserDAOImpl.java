@@ -108,17 +108,32 @@ public class UserDAOImpl implements UserDAO {
 	}
 
 	@Override
-	public User getUserFavoriteById(String id) {
+	public List<User> getAllFavsAndShares() {
+		// TODO Auto-generated method stub
+		
+		EntityManager em = JPA.openEntityManager();
+		List<User> beanList = null;
+
+		try {
+			beanList = em.createQuery("SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.favorites LEFT JOIN FETCH u.shares", User.class).getResultList();
+		} catch (Exception ex) {
+			// TODO: handle exception
+			ex.printStackTrace();
+		} finally {
+			em.close();
+		}
+		
+		return beanList;
+	}
+
+	@Override
+	public User getFavAndShare(String id) {
 		// TODO Auto-generated method stub
 		EntityManager em = JPA.openEntityManager();
-		
-		User bean = null;
-		
+		User video = null;
 		try {
-			//left join fetch means keep the left side even though the right side is empty
-			//the left is user right is favorites
-			bean = em.createQuery("SELECT u FROM User u LEFT JOIN FETCH u.favorites WHERE u.id = :uid", User.class)
-					.setParameter("uid", id)
+			video = em.createQuery("SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.favorites LEFT JOIN FETCH u.shares WHERE u.id = :id", User.class)
+					.setParameter("id", id)
 					.getSingleResult();
 		} catch (Exception ex) {
 			// TODO: handle exception
@@ -127,70 +142,14 @@ public class UserDAOImpl implements UserDAO {
 			em.close();
 		}
 		
-		return bean;
+		return video;
 	}
-
-	@Override
-	public List<User> getUserFavorites() {
-		// TODO Auto-generated method stub
-		EntityManager em = JPA.openEntityManager();
-		
-		List<User> beanList = null;
-		
-		try {
-			beanList = em.createQuery("SELECT u FROM User u LEFT JOIN FETCH u.favorites", User.class)
-					.getResultList();
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-		
-		return beanList;
-	}
-
-	@Override
-	public User getUserShareById(String id) {
-		// TODO Auto-generated method stub
-		EntityManager em = JPA.openEntityManager();
-		
-		User bean = null;
-		
-		try {
-			//left join fetch means keep the left side even though the right side is empty
-			//the left is user right is favorites
-			bean = em.createQuery("SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.shares WHERE u.id = :uid", User.class)
-					.setParameter("uid", id)
-					.getSingleResult();
-		} catch (Exception ex) {
-			// TODO: handle exception
-			ex.printStackTrace();
-		} finally {
-			em.close();
-		}
-		
-		return bean;
-	}
-
-	@Override
-	public List<User> getUserShares() {
-		// TODO Auto-generated method stub
-		EntityManager em = JPA.openEntityManager();
-		
-		List<User> beanList = null;
-		
-		try {
-			beanList = em.createQuery("SELECT u FROM User u LEFT JOIN FETCH u.shares", User.class)
-					.getResultList();
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-		
-		return beanList;
-	}
+	
 	public static void main(String[] args) {
 		UserDAOImpl userDao = new UserDAOImpl();
-		List<User> userList = userDao.getUserShares();
-		userList.forEach(u -> {
-			System.out.println(u.getShares().size());
+		List<User> userSet = userDao.getAllFavsAndShares();
+		userSet.forEach(u -> {
+			System.out.println(u.getId());
 		});
 	}
 }

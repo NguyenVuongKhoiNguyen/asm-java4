@@ -1,6 +1,7 @@
 package com.poly.movies.controllers.components;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.poly.movies.models.dao.VideoDAOImpl;
@@ -11,18 +12,17 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 /**
  * Servlet implementation class MovieServlet
  */
-@WebServlet("/movie")
+@WebServlet({"/movie", "/movie/*"})
 public class MovieServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
 	VideoDAOImpl videoDao = new VideoDAOImpl();
 	
-	List<Video> videoList = videoDao.findAll();
+	List<Video> videoList = new ArrayList<>();
 	
 	
 	
@@ -40,6 +40,19 @@ public class MovieServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		
+		videoList = videoDao.findAll();
+		
+		String pathInfo = request.getPathInfo();
+		if (pathInfo != null) {
+			if (pathInfo.equals("/search")) {
+				String movieName = request.getParameter("search").trim().toLowerCase();
+				if (movieName != null) {
+					if (!movieName.isBlank()) {
+						videoList.removeIf(video -> !video.getTitle().toLowerCase().contains(movieName));
+					}
+				}
+			}
+		}
 		
 		request.setAttribute("videoList", videoList);
 		request.getRequestDispatcher("/views/movie.jsp").forward(request, response);
@@ -50,6 +63,7 @@ public class MovieServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
+		
 		doGet(request, response);
 	}
 

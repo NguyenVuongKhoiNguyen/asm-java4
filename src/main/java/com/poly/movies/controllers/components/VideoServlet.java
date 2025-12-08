@@ -1,21 +1,21 @@
 package com.poly.movies.controllers.components;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.converters.DateConverter;
 
 import com.poly.movies.models.dao.VideoDAOImpl;
+import com.poly.movies.models.entities.Favorite;
+import com.poly.movies.models.entities.Share;
 import com.poly.movies.models.entities.Video;
-import com.poly.movies.utils.Xfile;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
@@ -35,9 +35,7 @@ public class VideoServlet extends HttpServlet implements CrudController {
        
 	VideoDAOImpl videoDao = new VideoDAOImpl();
 	
-	Set<Video> videoSet = videoDao.getAllFavsAndShares();
-	
-	List<Video> videoList = new ArrayList<>(videoSet);
+	List<Video> videoList = new ArrayList<>();
 
 	
 	Video editVideo = null;
@@ -58,31 +56,43 @@ public class VideoServlet extends HttpServlet implements CrudController {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		
-		sortVideoByShareDESC();
-		for(Video v : videoList)
-			System.out.println(v.getId() + " - " + v.getSharesSize());
+		
+		videoList = videoDao.getAllFavsAndShares();
 		
 		String pathInfo = request.getPathInfo();
 		
 		if (pathInfo != null) {
 			switch (pathInfo) {
-			case "/edit":
-				edit(request, response);
-				break;
-			case "/table-delete":
-				tableDelete(request, response);
-				break;
-			case "/most-views":
-				break;
-			case "/most-favs":
-				break;
-			case "/most-shares":
-				break;
+				case "/edit":
+					edit(request, response);
+					break;
+				case "/table-delete":
+					tableDelete(request, response);
+					videoList = videoDao.getAllFavsAndShares();
+					break;
+				case "/desc-most-views":
+					sortVideoByViewsDESC();
+					break;
+				case "/desc-most-favs":
+					sortVideoByFavoritesDESC();
+					break;
+				case "/desc-most-shares":
+					sortVideoBySharesDESC();
+					break;
+				case "/asc-most-views":
+					sortVideoByViewsASC();
+					break;
+				case "/asc-most-favs":
+					sortVideoByFavoritesASC();
+					break;
+				case "/asc-most-shares":
+					sortVideoBySharesASC();
+					break;
 			}
 		}
 		
 		request.setAttribute("newVideoId", generateNewVideoId());
-		request.setAttribute("videoSet", videoSet);
+		request.setAttribute("videoList", videoList);
 		request.getRequestDispatcher("/views/video-dashboard.jsp").forward(request, response);
 	}
 
@@ -91,7 +101,7 @@ public class VideoServlet extends HttpServlet implements CrudController {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		
+				
 		String pathInfo = request.getPathInfo();
 		
 		if (pathInfo == null) {
@@ -112,8 +122,9 @@ public class VideoServlet extends HttpServlet implements CrudController {
 			case "/clear":
 				request.setAttribute("editVideo", null);
 				break;
-		default:
-			throw new IllegalArgumentException("Unexpected value: " + pathInfo);
+			case "/search":
+				search(request, response);
+				break;
 		}
 		
 		doGet(request, response);
@@ -158,19 +169,28 @@ public class VideoServlet extends HttpServlet implements CrudController {
 			return;
 		}
 		
-		Xfile.saveFile(posterPart, posterPath);
-		Xfile.saveFile(videoPart, videoPath);
+		String applicationPath = request.getServletContext().getRealPath("");
+		String posterUploadPath = applicationPath + File.separator + "images" + File.separator + "movies";
+		String videoUploadPath = applicationPath + File.separator + "videos";
+		
+		File uploadPosterDir = new File(posterUploadPath);
+		File uploadVideoDir = new File(videoUploadPath);
+		
+		if (!uploadPosterDir.exists()) uploadPosterDir.mkdirs();
+		if (!uploadVideoDir.exists()) uploadVideoDir.mkdir();
+		
+		posterPart.write(posterUploadPath + File.separator + posterName);
+		videoPart.write(videoUploadPath + File.separator + videoName);
 		
 		video.setPoster(posterPart.getSubmittedFileName());
 		video.setVideo(videoPart.getSubmittedFileName());
 		
 		videoDao.create(video);
-		videoSet = videoDao.getAllFavsAndShares();
 		
 	}
 
 	@Override
-	public void update(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	public void update(HttpServletRequest request, HttpServletResponse response) {
 		// TODO Auto-generated method stub
 		
 		Video video = new Video();
@@ -186,39 +206,37 @@ public class VideoServlet extends HttpServlet implements CrudController {
 			e.printStackTrace();
 		}
 		
+		//get and set poster and video name
 		Video vi = null;
-		for (Video v : videoSet) {
+		for (Video v : videoList) {
 			if (v.getId().equals(video.getId())) {
 				vi = v;
 				break;
 			}
 		}
-		
 		video.setPoster(vi.getPoster());
 		video.setVideo(vi.getVideo());
 		
 		videoDao.update(video);
-		videoSet = videoDao.getAllFavsAndShares();
 	}
 
 	@Override
-	public void delete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	public void delete(HttpServletRequest request, HttpServletResponse response) {
 		// TODO Auto-generated method stub
 		String id = request.getParameter("id");
-		for (Video video : videoSet) {
+		for (Video video : videoList) {
 			if (video.getId().equals(id)) {
 				videoDao.delete(id);
-				videoSet = videoDao.getAllFavsAndShares();
 				break;
 			}
 		}
 	}
 
 	@Override
-	public void edit(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	public void edit(HttpServletRequest request, HttpServletResponse response) {
 		// TODO Auto-generated method stub
 		String id = request.getParameter("id");
-		for (Video video : videoSet) {
+		for (Video video : videoList) {
 			if (video.getId().equals(id)) {
 				editVideo = video;
 				request.setAttribute("editVideo", editVideo);
@@ -233,10 +251,10 @@ public class VideoServlet extends HttpServlet implements CrudController {
 		delete(request, response);
 	}
 	
-	public void sortVideoByFavoriteASC() {
+	public void sortVideoByFavoritesASC() {
 		videoList.sort(Comparator.comparing(Video::getFavoritesSize));
 	}
-	public void sortVideoByFavoriteDESC() {
+	public void sortVideoByFavoritesDESC() {
 		videoList.sort(Comparator.comparing(Video::getFavoritesSize).reversed());
 	}
 	
@@ -244,7 +262,73 @@ public class VideoServlet extends HttpServlet implements CrudController {
 		videoList.sort((video, other) -> Integer.compare(video.getSharesSize(), other.getSharesSize()));
 	}
 	
-	public void sortVideoByShareDESC() {
+	public void sortVideoBySharesDESC() {
 		videoList.sort((video, other) -> {return Integer.compare(other.getSharesSize(), video.getSharesSize());});
+	}
+	
+	public void sortVideoByViewsASC() {
+		
+		Collections.sort(videoList, new Comparator<Video>() {
+
+			@Override
+			public int compare(Video o1, Video o2) {
+				// TODO Auto-generated method stub
+				return o1.getViews() - o2.getViews();
+			}
+			
+		});
+	}
+	
+	public void sortVideoByViewsDESC() {
+		
+		Collections.sort(videoList, new Comparator<Video>() {
+
+			@Override
+			public int compare(Video o1, Video o2) {
+				// TODO Auto-generated method stub
+				return o2.getViews() - o1.getViews();
+			}
+			
+		});
+	}
+	
+	public void search(HttpServletRequest request, HttpServletResponse response) {
+		
+		String userFullname = request.getParameter("userFullname");
+		String findBy = request.getParameter("findBy");
+		
+		if (userFullname == null || findBy == null || findBy.isBlank() || videoList == null) {
+			request.setAttribute("searchUserFullname", "Choose findBy first or input's empty");
+			return;
+		}
+		
+		List<Video> foundedVideos = new ArrayList<>();
+		
+		if (findBy.equals("favorite")) {
+			 for (Video v : videoList) {
+				 for (Favorite f : v.getFavorites()) {
+					 if (f.getUser().getFullname().equals(userFullname)) {
+						 foundedVideos.add(v);
+						 break;
+					 }
+				 }
+			 }
+		} else if (findBy.equals("share")) {
+			for (Video v : videoList) {
+				for (Share sh : v.getShares()) {
+					if (sh.getUser().getFullname().equals(userFullname)) {
+						foundedVideos.add(v);
+						break;
+					}
+				}
+			}
+		} else {
+			return;
+		}
+		
+		if (!foundedVideos.isEmpty()) { 
+			request.setAttribute("foundedVideos", foundedVideos);
+			request.setAttribute("searchUserFullname", userFullname);
+		} else request.setAttribute("searchUserFullname", "No Video Found");
 	}
  }

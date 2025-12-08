@@ -70,11 +70,6 @@
                     <li class="nav-item">
                         <a class="nav-link ${sessionScope.page == 'movie' ? 'active' : ''}" href="${movieUrl}">Movies</a>
                     </li>
-
-                    <!-- Nav Link -->
-                    <li class="nav-item">
-                        <a class="nav-link " href="">Contact Us</a>
-                    </li>
 					
 					<li class="nav-item">
 						<c:choose>
@@ -120,11 +115,17 @@
                             </li>
                         </ul>
                     </li>
+                    <!-- Nav Link -->
+                   	<c:if test="${sessionScope.isAdmin == true}">
+	                    <li class="nav-item">
+	                        <a class="nav-link " href="${pageContext.request.contextPath}/video" >Dashboard</a>
+	                    </li>
+                   	</c:if>
                 </ul>
 
                 <!-- Nav Search -->
-                <form class="d-flex" action="">
-                    <input class="form-control me-2" id="search" type="search" name="" placeholder="Search">
+                <form class="d-flex" action="${movieUrl}/search" method="post">
+                    <input class="form-control me-2" id="search" type="search" name="search" placeholder="Movie Name">
                     <button class="btn btn-outline-success" type="submit">Search</button>
                 </form>
 				<!-- Nav User Profile -->
@@ -135,7 +136,7 @@
 		             data-bs-toggle="dropdown" aria-expanded="false">
 		             <img src="${pageContext.request.contextPath}/images/user-profiles-pics/${sessionScope.userLogin == null ? 'avatar.png' : sessionScope.userLogin.photo}" alt="User" class="rounded-circle me-2" width="30"
 		               height="30">
-		             ${sessionScope.userLogin == null ? 'No User' : sessionScope.userLogin.id}
+		             ${sessionScope.userLogin == null ? 'No User' : sessionScope.userLogin.fullname}
 		           </a>
 		           <ul class="dropdown-menu dropdown-menu-end">
 		           	<c:choose>
@@ -149,7 +150,7 @@
 		           			<li><a class="dropdown-item" href="${loginUrl}">Login</a></li>
 		           		</c:otherwise>
 		           	</c:choose>
-		             <c:if test="${sessionScope.userLogin != null}">
+		             <c:if test="${sessionScope.isAdmin == true}">
 		             	<li>
 		               		<hr class="dropdown-divider">
 		             	</li>

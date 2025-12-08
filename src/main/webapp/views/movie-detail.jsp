@@ -64,10 +64,6 @@
                 <article class="col-sm-9 ms-auto">
                     <div class="row">
                         <div class="w-auto p-0">
-                        	<%
-                        		HttpSession se = request.getSession();
-                        		System.out.println(se.getAttribute("userLogin"));
-                        	%>
                     		<c:choose>
                     			<c:when test="${sessionScope.userLogin == null}">
                     				<a class="btn btn-success" href="${pageContext.request.contextPath}/login?previousPage=movie-detail">

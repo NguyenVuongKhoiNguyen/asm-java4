@@ -52,5 +52,4 @@ public class Video {
 	public Integer getSharesSize() {
 		return shares.size();
 	}
-
 }
