@@ -15,6 +15,7 @@
       <li class="list-group-item bg-body-secondary">Dashboard</li>
       <li class="list-group-item ${sessionScope.page == 'user' ? 'active' : ''}"><a class="nav-link" href="${pageContext.request.contextPath}/user">User</a></li>
       <li class="list-group-item ${sessionScope.page == 'video' ? 'active' : ''}"><a class="nav-link" href="${pageContext.request.contextPath}/video">Video</a></li>
+      <li class="list-group-item ${sessionScope.page == 'user-ajax' ? 'active' : ''}"><a class="nav-link" href="${pageContext.request.contextPath}/views/video-dashboard-ajax.jsp">User With Ajax</a></li>
     </ul>
   </div>
 </div>

@@ -183,7 +183,6 @@ public class UserServlet extends HttpServlet implements CrudController {
 		// TODO Auto-generated method stub
 		String id = request.getParameter("id");
 		if (id != null) {
-			User user = userDao.findById(id);
 			userDao.delete(id);
 			userList = userDao.findAll();
 		}

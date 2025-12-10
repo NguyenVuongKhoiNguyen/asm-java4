@@ -17,7 +17,7 @@ import jakarta.servlet.http.HttpSession;
 /**
  * Servlet implementation class FilterServlet
  */
-@WebFilter({"/video", "/user"})
+@WebFilter({"/video", "/user", "/user-ajax"})
 public class FilterServlet implements Filter {
 
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)

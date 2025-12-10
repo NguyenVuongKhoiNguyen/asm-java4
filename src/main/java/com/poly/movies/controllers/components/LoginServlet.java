@@ -122,7 +122,7 @@ public class LoginServlet extends HttpServlet {
 		
 		for (Map.Entry<String, String> entry : map.entrySet()) {
 			Cookie cookie = new Cookie(entry.getKey(), entry.getValue());
-			cookie.setMaxAge(36000);
+			cookie.setMaxAge(36000); //1 hour
 			cookie.setPath("/");
 			cookie.setHttpOnly(true);
 			response.addCookie(cookie);

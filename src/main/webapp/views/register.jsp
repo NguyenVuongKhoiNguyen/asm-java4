@@ -33,19 +33,54 @@
 
 	<jsp:include page="../templates/header.jsp"></jsp:include>
 	
-    <section class="container mt-5 d-flex"> <!-- d-flex: !important -->
-        <div class="w-auto mx-auto bg-body-secondary p-5 rounded-4">
-            <h3>Register</h3>
-            <form class="mt-3" action="">
-                <input class="form-control" type="text" placeholder="Username" name="id">
-                <input class="form-control mt-3" type="text" placeholder="Password" name="password">
-                <input class="form-control mt-3" type="text" placeholder="Password Again" name="confirmPassword">
-                <input class="form-control mt-3" type="email" placeholder="Email" name="email">
-                <input class="form-control mt-3" type="text" placeholder="Fullname" name="fullname">
-                <button class="btn btn-success mt-3 float-end">Submit</button>
-            </form>
+    <div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header text-center bg-success text-white">
+                    <h4>Register</h4>
+                </div>
+                <div class="card-body">
+                    <form action="${pageContext.request.contextPath}/register" method="post" enctype="multipart/form-data">
+                        <!-- User ID -->
+                        <div class="mb-3">
+                            <label for="id" class="form-label">User ID</label>
+                            <input type="text" class="form-control" id="id" name="id" placeholder="Enter your ID" required>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+                        </div>
+
+                        <!-- Full Name -->
+                        <div class="mb-3">
+                            <label for="fullname" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="fullname" name="fullname" placeholder="Enter your full name" required>
+                        </div>
+
+                        <!-- Submit -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success">Register</button>
+                        </div>
+
+                        <!-- Link to login -->
+                        <div class="mt-3 text-center">
+                            <a href="login.jsp">Already have an account? Login</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-    </section>
+    </div>
+</div>
 
 	<jsp:include page="../templates/footer.jsp"></jsp:include>
 	

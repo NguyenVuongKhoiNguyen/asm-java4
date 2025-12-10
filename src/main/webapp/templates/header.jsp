@@ -37,6 +37,9 @@
 	<c:url var="changePasswordThemeModeUrl" value="/change-password">
 		<c:param name="mode" value="change"></c:param>
 	</c:url>
+	<c:url var="userProfileThemeModeUrl" value="/user-profile">
+		<c:param name="mode" value="change"></c:param>
+	</c:url>
     <!-- Nav Bar -->
     <nav class="navbar navbar-expand-lg bg-body-secondary">
 		
@@ -90,6 +93,9 @@
 							</c:when>
 							<c:when test="${sessionScope.page == 'change-password'}">
 								<a class="nav-link" href="${changePasswordThemeModeUrl}">${sessionScope.themeTxt}</a>		
+							</c:when>
+							<c:when test="${sessionScope.page == 'user-profile'}">
+								<a class="nav-link" href="${userProfileThemeModeUrl}">${sessionScope.themeTxt}</a>		
 							</c:when>
 							<c:otherwise>
 								<a class="nav-link" href="${homeThemeModeUrl}">${sessionScope.themeTxt}</a>		
@@ -150,17 +156,16 @@
 		           			<li><a class="dropdown-item" href="${loginUrl}">Login</a></li>
 		           		</c:otherwise>
 		           	</c:choose>
-		             <c:if test="${sessionScope.isAdmin == true}">
-		             	<li>
-		               		<hr class="dropdown-divider">
+		           	<c:if test="${sessionScope.userLogin != null }">
+		           		<li>
+	               			<hr class="dropdown-divider">
 		             	</li>
-		             	<li><a class="dropdown-item" href="#">Profile</a></li>
+		             	<li><a class="dropdown-item" href="${pageContext.request.contextPath}/user-profile">Profile</a></li>
 		             	<li><a class="dropdown-item" href="${pageContext.request.contextPath}/logout">Logout</a></li>
-		             </c:if>
+		           	</c:if>
 		           </ul>
 		         </li>
 		       </ul>
-			     
             </div>
         </div>
     </nav>

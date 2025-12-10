@@ -119,4 +119,24 @@
     <servlet-name>FilterServlet</servlet-name>
     <url-pattern>/FilterServlet</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>UserWithAjaxServlet</display-name>
+    <servlet-name>UserWithAjaxServlet</servlet-name>
+    <servlet-class>com.poly.movies.controllers.components.UserWithAjaxServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>UserWithAjaxServlet</servlet-name>
+    <url-pattern>/UserWithAjaxServlet</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>UserProfileServlet</display-name>
+    <servlet-name>UserProfileServlet</servlet-name>
+    <servlet-class>com.poly.movies.controllers.components.UserProfileServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>UserProfileServlet</servlet-name>
+    <url-pattern>/UserProfileServlet</url-pattern>
+  </servlet-mapping>
 </web-app>

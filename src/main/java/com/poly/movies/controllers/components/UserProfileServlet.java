@@ -1,5 +1,20 @@
 package com.poly.movies.controllers.components;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.apache.commons.beanutils.BeanUtils;
+
+import com.poly.movies.models.dao.UserDAOImpl;
+import com.poly.movies.models.entities.Favorite;
+import com.poly.movies.models.entities.Share;
+import com.poly.movies.models.entities.User;
+import com.poly.movies.models.entities.Video;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -8,26 +23,21 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-import java.io.IOException;
-
-import com.poly.movies.models.dao.UserDAOImpl;
-import com.poly.movies.models.entities.User;
-import com.poly.movies.utils.XDate;
-
 /**
- * Servlet implementation class RegisterServlet
+ * Servlet implementation class UserProfileServlet
  */
-@WebServlet("/register")
+@WebServlet("/user-profile")
 @MultipartConfig
-public class RegisterServlet extends HttpServlet {
+public class UserProfileServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
     
 	UserDAOImpl userDao = new UserDAOImpl();
 	
+	
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public RegisterServlet() {
+    public UserProfileServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -37,8 +47,30 @@ public class RegisterServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-				
-		request.getRequestDispatcher("/views/register.jsp").forward(request, response);
+		
+		
+		HttpSession s = request.getSession(false);
+		
+		User userLogin = (User) s.getAttribute("userLogin");
+		
+		System.out.println(userLogin.getId());
+		
+		User user = userDao.getFavAndShare(userLogin.getId());
+		
+		List<Favorite> favoriteList = new ArrayList<>(user.getFavorites());
+		List<Share> shareList = new ArrayList<>(user.getShares());
+		
+		List<Video> favoriteVideo = new ArrayList<>();
+		for (Favorite f : favoriteList) favoriteVideo.add(f.getVideo());
+		
+		List<Video> shareVideoTemp = new ArrayList<>();
+		for (Share sh : shareList) shareVideoTemp.add(sh.getVideo());
+		Set<Video> shareVideo = new HashSet<Video>(shareVideoTemp);
+		
+		request.setAttribute("userLogin", user);
+		request.setAttribute("favoriteVideo", favoriteVideo);
+		request.setAttribute("shareVideo", shareVideo);
+		request.getRequestDispatcher("/views/user-profile.jsp").forward(request, response);;
 	}
 
 	/**
@@ -48,13 +80,10 @@ public class RegisterServlet extends HttpServlet {
 		// TODO Auto-generated method stub
 		User user = new User();
 		
-		
 		String id = request.getParameter("id");
 		String password = request.getParameter("password");
 		String email = request.getParameter("email");
 		String fullname = request.getParameter("fullname");
-		
-		System.out.println(id);
 		
 		user.setId(id);
 		user.setPassword(password);
@@ -68,12 +97,12 @@ public class RegisterServlet extends HttpServlet {
 			return;
 		}
 		
+		User temp = userDao.findById(user.getId());
+		user.setPhoto(temp.getPhoto());
+		user.setCreatedDate(temp.getCreatedDate());
+		user.setAdmin(temp.isAdmin());
 		
-		user.setPhoto("avatar.png");
-		user.setCreatedDate(XDate.now());
-		user.setAdmin(false);
-		
-		userDao.create(user);
+		userDao.update(user);
 		doGet(request, response);
 	}
 

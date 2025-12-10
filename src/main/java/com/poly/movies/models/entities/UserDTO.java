@@ -1,18 +1,15 @@
 package com.poly.movies.models.entities;
 
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,8 +17,7 @@ import lombok.Setter;
 @Setter
 @Table(name = "Users")
 @Entity
-
-public class User {
+public class UserDTO {
 	@Id
 	private String id;
 	private String password;
@@ -30,18 +26,4 @@ public class User {
 	private String photo;
 	private boolean admin; // 1 is admin
 	private Date createdDate;
-
-	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-	private Set<Favorite> favorites = new HashSet<>();
-
-	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-	private Set<Share> shares = new HashSet<>();
-
-	public Integer getUserFavoritesSize() {
-		return favorites.size();
-	}
-
-	public Integer getUserSharesSize() {
-		return shares.size();
-	}
 }
